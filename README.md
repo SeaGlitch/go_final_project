@@ -22,3 +22,6 @@ var Token = ``
 Команды для запуска в докере: 
 docker build -t my_go_project .
 docker run -d -p 7540:7540 my_go_project
+
+Upd.: Для скачивания докер-образа: 
+docker pull seaglitch/go_final_project:latest
