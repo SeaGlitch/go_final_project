@@ -31,6 +31,7 @@ func TableDB(db *sql.DB, dbPath string) {
 		install = true
 	}
 
+	// Создание таблицы базы данных
 	if install {
 		table := `CREATE TABLE IF NOT EXISTS scheduler (
 					id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -46,8 +47,8 @@ func TableDB(db *sql.DB, dbPath string) {
 		if err != nil {
 			log.Fatal("ошибка при создании таблицы базы данных", err)
 		}
-		log.Println("База данных создана.")
+		log.Println("База данных запущена.")
 	} else {
-		log.Println("База данных существует.")
+		log.Println("База данных не существует.")
 	}
 }

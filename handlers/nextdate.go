@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 
-	"go_final_project/tasks"
 	"net/http"
 	"time"
+
+	"github.com/SeaGlitch/go_final_project/tasks"
 )
 
 // Вычисление следующей даты задачи
@@ -37,7 +38,7 @@ func NextDateH(db *sql.DB) http.HandlerFunc {
 	}
 }
 
-// Функция отметки задачи выполненной
+// Функция отмечает задачу выполненной, запрашивает следующую дату
 func DoneTaskH(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -47,7 +48,7 @@ func DoneTaskH(db *sql.DB) http.HandlerFunc {
 
 		id := r.FormValue("id")
 		if id == "" {
-			http.Error(w, `{"error": "неправильный индекс"}`, http.StatusBadRequest)
+			http.Error(w, `{"error": "неправильный id"}`, http.StatusBadRequest)
 			return
 		}
 
