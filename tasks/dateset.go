@@ -3,6 +3,7 @@ package tasks
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -106,26 +107,33 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 
 			dateDay := tDate
 			var nextDate string
+
+			sort.Sort(sort.Reverse(sort.IntSlice(days)))
+
 			if !setMonth {
 				for _, day := range days {
-					dateMonth := tDate.Month()
+					dateDay = tDate.AddDate(0, 0, 1)
+					dateMonth := dateDay.Month()
 
 					if day == -1 || day == -2 { //Последний или предпоследний день месяца
-						dateDay = time.Date(tDate.Year(), tDate.Month()+1, 1, 0, 0, 0, 0, tDate.Location()).AddDate(0, 0, day)
+						dateDay = time.Date(dateDay.Year(), dateDay.Month()+1, 1, 0, 0, 0, 0, dateDay.Location()).AddDate(0, 0, day)
 					} else if day == 31 {
 						if dateMonth == time.February || dateMonth == time.April || dateMonth == time.June || dateMonth == time.September || dateMonth == time.November {
 							dateMonth = dateMonth + 1
 						}
 
-						dateDay = time.Date(tDate.Year(), dateMonth, day, 0, 0, 0, 0, tDate.Location())
+						dateDay = time.Date(dateDay.Year(), dateMonth, day, 0, 0, 0, 0, dateDay.Location())
 
 					} else if day > 28 && dateMonth == time.February {
-						dateDay = time.Date(tDate.Year(), dateMonth+1, 1, 0, 0, 0, 0, tDate.Location()).AddDate(0, 0, -1)
+						dateDay = time.Date(dateDay.Year(), dateMonth+1, 1, 0, 0, 0, 0, dateDay.Location()).AddDate(0, 0, -1)
 					} else {
-						dateDay = time.Date(tDate.Year(), tDate.Month(), day, 0, 0, 0, 0, tDate.Location())
+						dateDay = time.Date(dateDay.Year(), dateDay.Month(), day, 0, 0, 0, 0, dateDay.Location())
 					}
 
 					for !now.Before(dateDay) {
+						dateDay = dateDay.AddDate(0, 1, 0)
+					}
+					if !dateDay.After(tDate) {
 						dateDay = dateDay.AddDate(0, 1, 0)
 					}
 
@@ -138,26 +146,31 @@ func NextDate(now time.Time, date string, repeat string) (string, error) {
 				}
 			} else {
 				for _, val := range monthsStr {
+					dateDay = tDate.AddDate(0, 0, 1)
 					month, _ := strconv.Atoi(val)
 					dateMonth := time.Month(month)
 
 					for _, day := range days {
 						if day == -1 || day == -2 { //Последний или предпоследний день месяца
-							dateDay = time.Date(tDate.Year(), dateMonth+1, 1, 0, 0, 0, 0, tDate.Location()).AddDate(0, 0, day)
+							dateDay = time.Date(dateDay.Year(), dateMonth+1, 1, 0, 0, 0, 0, dateDay.Location()).AddDate(0, 0, day)
 						} else if day == 31 {
 							if dateMonth == time.February || dateMonth == time.April || dateMonth == time.June || dateMonth == time.September || dateMonth == time.November {
 								dateMonth = dateMonth + 1
 							}
 
-							dateDay = time.Date(tDate.Year(), dateMonth, day, 0, 0, 0, 0, tDate.Location())
+							dateDay = time.Date(dateDay.Year(), dateMonth, day, 0, 0, 0, 0, dateDay.Location())
 
 						} else if day > 28 && dateMonth == time.February {
-							dateDay = time.Date(tDate.Year(), dateMonth+1, 1, 0, 0, 0, 0, tDate.Location()).AddDate(0, 0, -1)
+							dateDay = time.Date(dateDay.Year(), dateMonth+1, 1, 0, 0, 0, 0, dateDay.Location()).AddDate(0, 0, -1)
 						} else {
-							dateDay = time.Date(tDate.Year(), dateMonth, day, 0, 0, 0, 0, tDate.Location())
+							dateDay = time.Date(dateDay.Year(), dateMonth, day, 0, 0, 0, 0, dateDay.Location())
 						}
 
 						for dateDay.Before(now) {
+							dateDay = dateDay.AddDate(1, 0, 0)
+						}
+
+						if !dateDay.After(tDate) {
 							dateDay = dateDay.AddDate(1, 0, 0)
 						}
 

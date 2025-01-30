@@ -50,6 +50,11 @@ func TasksH(db *sql.DB) http.HandlerFunc {
 			tasks = append(tasks, task)
 		}
 
+		if err := rows.Err(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		if tasks == nil {
 			tasks = []Task{} //Заготовка для пустого списка
 		}

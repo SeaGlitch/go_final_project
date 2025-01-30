@@ -40,7 +40,7 @@ func main() {
 	mux.HandleFunc("/api/tasks", handlers.TasksH(db))
 	mux.HandleFunc("/api/task/done", handlers.DoneTaskH(db))
 
-	mux.Handle("/*", http.FileServer(http.Dir("./web")))
+	mux.Handle("/", http.FileServer(http.Dir("./web")))
 
 	// Получение порта
 	port := os.Getenv("TODO_PORT")
